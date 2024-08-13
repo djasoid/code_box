@@ -15,7 +15,6 @@ class Network:
         self.output_size = layer_counts[-1]
         self.layers = [Layer(layer_counts[i], layer_counts[i-1]) for i in range(1, len(layer_counts))]
 
-
     def forward(self, input_arr: np.ndarray) -> np.ndarray: # the input should match the input_size
         """Forward pass through the network for a single input."""
         for layer in self.layers:
@@ -62,7 +61,7 @@ class Network:
         
         return loss
     
-    def train(self, input_arrs: list[np.ndarray], targets: list[np.ndarray], learning_rate: float) -> None:
+    def train(self, input_arrs: np.ndarray, targets: np.ndarray, learning_rate: float) -> None:
         """Train the network on a list of inputs and targets."""
         for i in range(len(input_arrs)):
             los = self.backward(input_arrs[i], targets[i], learning_rate)
@@ -96,7 +95,7 @@ def load_labels(filename: str) -> np.ndarray:
         labels = np.fromfile(f, dtype=np.uint8)
         return labels
 
-def model_test(model: Network, test_images: list[np.ndarray], test_labels: np.ndarray) -> None:
+def model_test(model: Network, test_images: np.ndarray, test_labels: np.ndarray) -> None:
     """Test the model on a list of images and labels."""
     correct = 0
     for i in range(len(test_images)):
@@ -105,12 +104,14 @@ def model_test(model: Network, test_images: list[np.ndarray], test_labels: np.nd
             correct += 1
     print(f'Accuracy: {correct / len(test_images) * 100}%')
 
+# create the model
 model = Network([28 * 28, 16, 16, 10])
 
+# load the MNIST dataset
 train_images = load_mnist_images('mnist/train-images.idx3-ubyte')
 train_labels = load_mnist_labels('mnist/train-labels.idx1-ubyte')
 test_images = load_mnist_images('mnist/t10k-images.idx3-ubyte')
-test_labels = load_labels('mnist/t10k-labels.idx1-ubyte')
+test_labels = load_labels('mnist/t10k-labels.idx1-ubyte') # not one-hot encoded
 
 # traning the model
 epochs = 5
